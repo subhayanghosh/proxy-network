@@ -1,0 +1,31 @@
+#cloud-config
+packages:
+  - squid
+  - apache2-utils
+
+write_files:
+  - path: /etc/squid/squid.conf
+    content: |
+      # Basic Squid Configuration
+      http_port 3128
+      
+      # Authentication
+      auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/passwords
+      auth_param basic realm Proxy
+      acl authenticated proxy_auth REQUIRED
+      http_access allow authenticated
+      http_access deny all
+      
+      # Anonymity
+      forwarded_for off
+      request_header_access Via deny all
+      request_header_access X-Forwarded-For deny all
+      
+      # Optimization
+      dns_v4_first on
+
+runcmd:
+  # Create user and password (passed via Terraform template_file)
+  # Using ' to quote the password to avoid shell expansion issues
+  - htpasswd -cb /etc/squid/passwords ${proxy_username} '${proxy_password}'
+  - systemctl restart squid

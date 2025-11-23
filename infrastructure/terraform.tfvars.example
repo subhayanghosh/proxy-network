@@ -1,0 +1,5 @@
+do_token       = "YOUR_DIGITALOCEAN_TOKEN"
+node_count     = 2
+region         = "nyc1"
+proxy_username = "myproxyuser"
+proxy_password = "securepassword123"
